@@ -16,6 +16,8 @@ jobs:
 
       - name: Apply upstream PR 1583
         run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git remote add upstream https://github.com/moonlight-stream/moonlight-android.git
           git fetch upstream pull/1583/head:pr-1583
           git cherry-pick pr-1583
