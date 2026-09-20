@@ -1,0 +1,40 @@
+name: Build Moonlight with keyboard button
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout fork
+        uses: actions/checkout@v4
+        with:
+          ref: master
+          submodules: recursive
+          fetch-depth: 0
+
+      - name: Apply upstream PR 1583
+        run: |
+          git remote add upstream https://github.com/moonlight-stream/moonlight-android.git
+          git fetch upstream pull/1583/head:pr-1583
+          git cherry-pick pr-1583
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Build debug APK
+        run: ./gradlew assembleDebug
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: moonlight-keyboard-button-apk
+          path: app/build/outputs/apk/debug/*.apk
+          if-no-files-found: error
